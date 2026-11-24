@@ -1,0 +1,54 @@
+name: iOS — IPA non signée
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Tag de la Release à laquelle attacher l'IPA"
+        required: true
+        default: "v1.0.0"
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  ipa:
+    runs-on: macos-15
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: 3.38.10
+          cache: true
+
+      - name: Dépendances
+        run: flutter pub get
+
+      - name: Tests
+        run: flutter test
+
+      - name: Build iOS (sans signature)
+        run: flutter build ios --release --no-codesign
+
+      - name: Empaquetage IPA
+        run: |
+          mkdir -p Payload
+          cp -R build/ios/iphoneos/Runner.app Payload/
+          zip -qry BankCards-unsigned.ipa Payload
+          ls -lh BankCards-unsigned.ipa
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: BankCards-unsigned-ipa
+          path: BankCards-unsigned.ipa
+
+      - name: Attacher à la Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.event.inputs.tag || github.ref_name }}
+          files: BankCards-unsigned.ipa
