@@ -97,7 +97,7 @@ flutter build ios --release --no-codesign   # iOS (sur macOS)
 
 ## 📱 Installer l'app
 
-- **Android** : télécharge `BankCards-v1.0.0.apk` depuis la [dernière Release](https://github.com/Donchaminade/bankcards/releases/latest), puis autorise l'installation depuis des sources inconnues.
+- **Android** : télécharge `BankCards-v1.0.1.apk` depuis la [dernière Release](https://github.com/Donchaminade/bankcards/releases/latest), puis autorise l'installation depuis des sources inconnues.
 - **iPhone** : télécharge `BankCards-unsigned.ipa` depuis la [dernière Release](https://github.com/Donchaminade/bankcards/releases/latest).
   ⚠️ **L'IPA n'est pas signée**. Elle ne s'installe pas directement : il faut la signer avec ton identifiant Apple via **[AltStore](https://altstore.io)** ou **[Sideloadly](https://sideloadly.io)**. Avec un compte gratuit, l'app reste valable 7 jours.
   L'IPA est construite automatiquement par GitHub Actions sur macOS ([`.github/workflows/ios.yml`](.github/workflows/ios.yml)).
