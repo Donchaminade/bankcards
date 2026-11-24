@@ -61,6 +61,15 @@ Aucun bouton mort : chaque action ouvre un vrai écran ou une feuille dans la ch
 | Confirmation | **puces d'avantages**, **ligne Adresse** | détail de chaque avantage ; modification de l'adresse |
 | Reçu | **Partager** | vrai partage (Web Share API sur le web, feuille native sur mobile), sinon copie dans le presse-papiers |
 
+<p align="center">
+  <img src="screenshots/10-recevoir.png" width="160" alt="Recevoir">
+  <img src="screenshots/11-scanner.png" width="160" alt="Scanner">
+  <img src="screenshots/12-profil.png" width="160" alt="Profil">
+  <img src="screenshots/13-parametres-carte.png" width="160" alt="Paramètres de la carte">
+  <img src="screenshots/14-cashback.png" width="160" alt="Cashback">
+  <img src="screenshots/15-conciergerie.png" width="160" alt="Conciergerie">
+</p>
+
 ## 💳 Les cartes
 
 | Carte | Réseau | Finition | Couleurs |
