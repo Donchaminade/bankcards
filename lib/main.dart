@@ -2,7 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 
+import 'data.dart';
 import 'demo.dart';
+import 'screens/confirm.dart';
+import 'screens/picker.dart';
+import 'screens/placed.dart';
+import 'screens/receipt.dart';
 import 'screens/home.dart';
 import 'theme.dart';
 import 'widgets/bank_card.dart';
@@ -16,12 +21,32 @@ void main() {
     Demo.slow = slow;
     timeDilation = slow;
   }
-  runApp(BankCardsApp(chrome: q['frame'] != '0'));
+  runApp(BankCardsApp(chrome: q['frame'] != '0', screen: q['screen'], cardId: q['card']));
 }
 
 class BankCardsApp extends StatelessWidget {
-  const BankCardsApp({super.key, this.chrome = true});
+  const BankCardsApp({super.key, this.chrome = true, this.screen, this.cardId});
   final bool chrome;
+
+  /// Ouverture directe d'un écran (?screen=picker|confirm|placed|receipt&card=gold), pratique pour les tests.
+  final String? screen;
+  final String? cardId;
+
+  Widget _start() {
+    final card = catalog.firstWhere((c) => c.id == cardId, orElse: () => catalog[2]);
+    switch (screen) {
+      case 'picker':
+        return const PickerScreen();
+      case 'confirm':
+        return ConfirmScreen(card: card);
+      case 'placed':
+        return PlacedScreen(card: card);
+      case 'receipt':
+        return ReceiptScreen(card: card);
+      default:
+        return const HomeScreen();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,10 +60,7 @@ class BankCardsApp extends StatelessWidget {
         if (!chrome || size.width < 700) return child!;
         return DeviceShell(child: child!);
       },
-      home: const AnnotatedRegion<SystemUiOverlayStyle>(
-        value: SystemUiOverlayStyle.light,
-        child: HomeScreen(),
-      ),
+      home: AnnotatedRegion<SystemUiOverlayStyle>(value: SystemUiOverlayStyle.light, child: _start()),
     );
   }
 }
@@ -79,7 +101,10 @@ class DeviceShell extends StatelessWidget {
                     padding: EdgeInsets.symmetric(vertical: size.height * .04, horizontal: 40),
                     child: Column(
                       children: [
-                        SizedBox(height: size.height * .2, child: FittedBox(child: pitch)),
+                        SizedBox(
+                          height: size.height * .2,
+                          child: FittedBox(child: pitch),
+                        ),
                         SizedBox(height: size.height * .02),
                         Expanded(child: FittedBox(child: phoneWidget)),
                       ],
@@ -89,7 +114,10 @@ class DeviceShell extends StatelessWidget {
                     padding: EdgeInsets.symmetric(vertical: size.height * .05, horizontal: size.width * .07),
                     child: Row(
                       children: [
-                        Expanded(flex: 11, child: FittedBox(alignment: Alignment.centerLeft, child: pitch)),
+                        Expanded(
+                          flex: 11,
+                          child: FittedBox(alignment: Alignment.centerLeft, child: pitch),
+                        ),
                         SizedBox(width: size.width * .04),
                         Expanded(flex: 9, child: FittedBox(child: phoneWidget)),
                       ],
@@ -122,18 +150,30 @@ class _Pitch extends StatelessWidget {
               const SizedBox(width: 18),
               ShaderMask(
                 shaderCallback: (r) => BC.goldGradient.createShader(r),
-                child: const Text('BankCards',
-                    style: TextStyle(color: Colors.white, fontSize: 84, fontWeight: FontWeight.w800, letterSpacing: -2, height: 1)),
+                child: const Text(
+                  'BankCards',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 84,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: -2,
+                    height: 1,
+                  ),
+                ),
               ),
             ],
           ),
           const SizedBox(height: 18),
-          Text('Commandez votre carte premium,\nen quelques gestes.',
-              textAlign: center ? TextAlign.center : TextAlign.start,
-              style: const TextStyle(color: Colors.white, fontSize: 34, fontWeight: FontWeight.w700, height: 1.2)),
+          Text(
+            'Commandez votre carte premium,\nen quelques gestes.',
+            textAlign: center ? TextAlign.center : TextAlign.start,
+            style: const TextStyle(color: Colors.white, fontSize: 34, fontWeight: FontWeight.w700, height: 1.2),
+          ),
           const SizedBox(height: 14),
-          Text('Classic · World · Gold · Platinum · Infinite',
-              style: TextStyle(color: Colors.white.withValues(alpha: .6), fontSize: 19, fontWeight: FontWeight.w600)),
+          Text(
+            'Classic · World · Gold · Platinum · Infinite',
+            style: TextStyle(color: Colors.white.withValues(alpha: .6), fontSize: 19, fontWeight: FontWeight.w600),
+          ),
           const SizedBox(height: 26),
           Wrap(
             alignment: center ? WrapAlignment.center : WrapAlignment.start,
@@ -148,7 +188,10 @@ class _Pitch extends StatelessWidget {
                     color: Colors.white.withValues(alpha: .06),
                     border: Border.all(color: BC.gold.withValues(alpha: .5)),
                   ),
-                  child: Text(c, style: const TextStyle(color: BC.goldLight, fontSize: 16, fontWeight: FontWeight.w700)),
+                  child: Text(
+                    c,
+                    style: const TextStyle(color: BC.goldLight, fontSize: 16, fontWeight: FontWeight.w700),
+                  ),
                 ),
             ],
           ),
@@ -158,8 +201,10 @@ class _Pitch extends StatelessWidget {
             children: [
               const FlutterLogo(size: 26),
               const SizedBox(width: 10),
-              Text('Flutter · Dart · CustomPainter · Hero',
-                  style: TextStyle(color: Colors.white.withValues(alpha: .75), fontSize: 17, fontWeight: FontWeight.w600)),
+              Text(
+                'Flutter · Dart · CustomPainter · Hero',
+                style: TextStyle(color: Colors.white.withValues(alpha: .75), fontSize: 17, fontWeight: FontWeight.w600),
+              ),
             ],
           ),
         ],
@@ -244,7 +289,10 @@ class _StatusBar extends StatelessWidget {
                 Positioned(
                   left: 44,
                   top: 18,
-                  child: Text('12:03', style: TextStyle(color: c, fontWeight: FontWeight.w700, fontSize: 16)),
+                  child: Text(
+                    '12:03',
+                    style: TextStyle(color: c, fontWeight: FontWeight.w700, fontSize: 16),
+                  ),
                 ),
                 Align(
                   alignment: const Alignment(0, .1),

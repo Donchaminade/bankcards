@@ -37,7 +37,9 @@ class _HomeScreenState extends State<HomeScreen> {
         children: [
           CustomScrollView(
             slivers: [
-              SliverToBoxAdapter(child: _Header(card: current, top: pad.top, onCard: _openPicker)),
+              SliverToBoxAdapter(
+                child: _Header(card: current, top: pad.top, onCard: _openPicker),
+              ),
               const SliverToBoxAdapter(child: _QuickActions()),
               SliverToBoxAdapter(
                 child: Padding(
@@ -46,8 +48,14 @@ class _HomeScreenState extends State<HomeScreen> {
                     children: [
                       const Text('Transactions récentes', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 17)),
                       const Spacer(),
-                      Text('Tout voir',
-                          style: TextStyle(color: BC.blue.withValues(alpha: .9), fontWeight: FontWeight.w700, fontSize: 13)),
+                      Text(
+                        'Tout voir',
+                        style: TextStyle(
+                          color: BC.blue.withValues(alpha: .9),
+                          fontWeight: FontWeight.w700,
+                          fontSize: 13,
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -56,13 +64,13 @@ class _HomeScreenState extends State<HomeScreen> {
                 itemCount: transactions.length,
                 itemBuilder: (_, i) => _TxTile(tx: transactions[i]),
               ),
-              SliverToBoxAdapter(child: SizedBox(height: 100 + pad.bottom)),
+              SliverToBoxAdapter(child: SizedBox(height: 96 + safeBottom(context))),
             ],
           ),
           Positioned(
             left: 0,
             right: 0,
-            bottom: 18 + pad.bottom,
+            bottom: safeBottom(context),
             child: Center(child: _NavPill(onCards: _openPicker)),
           ),
         ],
@@ -104,7 +112,10 @@ class _Header extends StatelessWidget {
                       child: const CircleAvatar(
                         radius: 19,
                         backgroundColor: BC.navy,
-                        child: Text('CA', style: TextStyle(color: BC.goldLight, fontWeight: FontWeight.w800, fontSize: 13)),
+                        child: Text(
+                          'CA',
+                          style: TextStyle(color: BC.goldLight, fontWeight: FontWeight.w800, fontSize: 13),
+                        ),
                       ),
                     ),
                     const SizedBox(width: 12),
@@ -113,8 +124,10 @@ class _Header extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text('Bonjour,', style: TextStyle(color: Colors.white.withValues(alpha: .6), fontSize: 13)),
-                          const Text(holderShort,
-                              style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.w800)),
+                          const Text(
+                            holderShort,
+                            style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.w800),
+                          ),
                         ],
                       ),
                     ),
@@ -130,13 +143,22 @@ class _Header extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.baseline,
                   textBaseline: TextBaseline.alphabetic,
                   children: [
-                    const Text('2 450 000',
-                        style: TextStyle(color: Colors.white, fontSize: 36, fontWeight: FontWeight.w800, letterSpacing: -.5)),
+                    const Text(
+                      '2 450 000',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 36,
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: -.5,
+                      ),
+                    ),
                     const SizedBox(width: 8),
                     ShaderMask(
                       shaderCallback: (r) => BC.goldGradient.createShader(r),
-                      child: const Text('FCFA',
-                          style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w800)),
+                      child: const Text(
+                        'FCFA',
+                        style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w800),
+                      ),
                     ),
                     const Spacer(),
                     Container(
@@ -145,15 +167,20 @@ class _Header extends StatelessWidget {
                         color: const Color(0xFF22C55E).withValues(alpha: .16),
                         borderRadius: BorderRadius.circular(20),
                       ),
-                      child: const Text('+12,4 %',
-                          style: TextStyle(color: Color(0xFF4ADE80), fontWeight: FontWeight.w700, fontSize: 12)),
+                      child: const Text(
+                        '+12,4 %',
+                        style: TextStyle(color: Color(0xFF4ADE80), fontWeight: FontWeight.w700, fontSize: 12),
+                      ),
                     ),
                   ],
                 ),
                 const SizedBox(height: 20),
                 GestureDetector(
                   onTap: onCard,
-                  child: AspectRatio(aspectRatio: kCardRatio, child: CardHero(card: card)),
+                  child: AspectRatio(
+                    aspectRatio: kCardRatio,
+                    child: CardHero(card: card),
+                  ),
                 ),
               ],
             ),
@@ -193,7 +220,10 @@ class _QuickActions extends StatelessWidget {
                     child: Icon(icon, color: BC.navy, size: 22),
                   ),
                   const SizedBox(height: 6),
-                  Text(label, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: BC.ink)),
+                  Text(
+                    label,
+                    style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: BC.ink),
+                  ),
                 ],
               ),
             ),
@@ -232,11 +262,14 @@ class _TxTile extends StatelessWidget {
               ],
             ),
           ),
-          Text('${tx.credit ? '+' : '−'}${fcfa(tx.amount)}',
-              style: TextStyle(
-                  fontWeight: FontWeight.w700,
-                  fontSize: 14,
-                  color: tx.credit ? const Color(0xFF15803D) : BC.ink)),
+          Text(
+            '${tx.credit ? '+' : '−'}${fcfa(tx.amount)}',
+            style: TextStyle(
+              fontWeight: FontWeight.w700,
+              fontSize: 14,
+              color: tx.credit ? const Color(0xFF15803D) : BC.ink,
+            ),
+          ),
         ],
       ),
     );
@@ -249,17 +282,17 @@ class _NavPill extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Widget item(IconData i, {bool active = false, VoidCallback? onTap, required String label}) => Tooltip(
-          message: label,
-          child: GestureDetector(
-            onTap: onTap,
-            child: Container(
-              width: 52,
-              height: 52,
-              decoration: active ? const BoxDecoration(shape: BoxShape.circle, gradient: BC.goldGradient) : null,
-              child: Icon(i, color: active ? BC.ink : Colors.white.withValues(alpha: .7), size: 22),
-            ),
-          ),
-        );
+      message: label,
+      child: GestureDetector(
+        onTap: onTap,
+        child: Container(
+          width: 52,
+          height: 52,
+          decoration: active ? const BoxDecoration(shape: BoxShape.circle, gradient: BC.goldGradient) : null,
+          child: Icon(i, color: active ? BC.ink : Colors.white.withValues(alpha: .7), size: 22),
+        ),
+      ),
+    );
     return Container(
       padding: const EdgeInsets.all(6),
       decoration: BoxDecoration(

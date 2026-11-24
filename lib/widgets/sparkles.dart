@@ -28,8 +28,7 @@ class SparkleField extends StatefulWidget {
 }
 
 class _SparkleFieldState extends State<SparkleField> with SingleTickerProviderStateMixin {
-  late final AnimationController _c =
-      AnimationController(vsync: this, duration: const Duration(seconds: 6))..repeat();
+  late final AnimationController _c = AnimationController(vsync: this, duration: const Duration(seconds: 6))..repeat();
   late List<_Sparkle> _items = _make();
 
   List<_Sparkle> _make() {
@@ -63,10 +62,7 @@ class _SparkleFieldState extends State<SparkleField> with SingleTickerProviderSt
   Widget build(BuildContext context) {
     return IgnorePointer(
       child: RepaintBoundary(
-        child: CustomPaint(
-          painter: _SparklePainter(_c, _items, widget.intensity, widget.speed),
-          size: Size.infinite,
-        ),
+        child: CustomPaint(painter: _SparklePainter(_c, _items, widget.intensity, widget.speed), size: Size.infinite),
       ),
     );
   }
@@ -118,9 +114,13 @@ void drawStar(Canvas canvas, Offset c, double r, Color color) {
     ..quadraticBezierTo(c.dx, c.dy, c.dx - r, c.dy)
     ..quadraticBezierTo(c.dx, c.dy, c.dx, c.dy - r)
     ..close();
-  canvas.drawCircle(c, r * .9, Paint()
-    ..color = color.withValues(alpha: color.a * .25)
-    ..maskFilter = MaskFilter.blur(BlurStyle.normal, r * .6));
+  canvas.drawCircle(
+    c,
+    r * .9,
+    Paint()
+      ..color = color.withValues(alpha: color.a * .25)
+      ..maskFilter = MaskFilter.blur(BlurStyle.normal, r * .6),
+  );
   canvas.drawPath(p, Paint()..color = color);
 }
 

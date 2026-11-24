@@ -39,12 +39,12 @@ class ToneObserver extends NavigatorObserver {
 }
 
 Route<T> fadeRoute<T>(Widget page, String name, {int ms = 650}) => PageRouteBuilder<T>(
-      settings: RouteSettings(name: name),
-      transitionDuration: Duration(milliseconds: ms),
-      reverseTransitionDuration: Duration(milliseconds: ms),
-      pageBuilder: (_, _, _) => page,
-      transitionsBuilder: (_, a, _, child) => FadeTransition(
-        opacity: CurvedAnimation(parent: a, curve: Curves.easeOut),
-        child: child,
-      ),
-    );
+  settings: RouteSettings(name: name),
+  transitionDuration: Duration(milliseconds: ms),
+  reverseTransitionDuration: Duration(milliseconds: ms),
+  pageBuilder: (_, _, _) => page,
+  transitionsBuilder: (_, a, _, child) => FadeTransition(
+    opacity: CurvedAnimation(parent: a, curve: Curves.easeOut),
+    child: child,
+  ),
+);

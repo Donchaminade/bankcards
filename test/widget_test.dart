@@ -89,4 +89,21 @@ void main() {
     expect(find.text('PAYÉ'), findsOneWidget);
     expect(find.text('Terminé'), findsOneWidget);
   });
+
+  for (final h in [664.0, 844.0]) {
+    testWidgets('confirmation 390x${h.toInt()} : CTA visible et contenu défilable jusqu\'en bas', (t) async {
+      t.view.physicalSize = Size(390, h);
+      t.view.devicePixelRatio = 1;
+      addTearDown(t.view.reset);
+      await t.pumpWidget(MaterialApp(theme: BC.theme(), home: ConfirmScreen(card: catalog[3])));
+      await settle(t, 1200);
+      final cta = t.getRect(find.text('Commander · 120 000 FCFA'));
+      expect(cta.bottom, lessThan(h - 24), reason: 'le bouton doit rester au-dessus du bas de l\'écran');
+      await t.drag(find.byType(SingleChildScrollView), const Offset(0, -800));
+      await settle(t, 600);
+      final perk = t.getRect(find.text('Cashback 2 %'));
+      final bar = t.getRect(find.text('Commander · 120 000 FCFA'));
+      expect(perk.bottom, lessThan(bar.top), reason: 'les avantages ne doivent pas être cachés par la barre du bas');
+    });
+  }
 }

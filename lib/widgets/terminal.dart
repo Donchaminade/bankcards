@@ -36,28 +36,27 @@ class PaymentTerminal extends StatelessWidget {
   Widget build(BuildContext context) {
     final m = isoMatrix();
     Widget layer(CustomPainter p) => Transform(
-          alignment: Alignment.center,
-          transform: m,
-          child: CustomPaint(size: kTerminalSize, painter: p),
-        );
+      alignment: Alignment.center,
+      transform: m,
+      child: CustomPaint(size: kTerminalSize, painter: p),
+    );
     return SizedBox.fromSize(
       size: kTerminalSize,
       child: Stack(
         clipBehavior: Clip.none,
         children: [
           // Ombre portée au sol.
-          Transform.translate(
-            offset: const Offset(10, 34),
-            child: layer(_ShadowPainter()),
-          ),
+          Transform.translate(offset: const Offset(10, 34), child: layer(_ShadowPainter())),
           // Épaisseur du boîtier (couches décalées).
           for (var k = 26; k >= 1; k -= 1)
             Transform.translate(
               offset: Offset(0, k.toDouble()),
-              child: layer(_SilhouettePainter(
-                Color.lerp(const Color(0xFFF2F3F7), const Color(0xFFC9CDD8), k / 26)!,
-                k < 10 ? 1 : 0,
-              )),
+              child: layer(
+                _SilhouettePainter(
+                  Color.lerp(const Color(0xFFF2F3F7), const Color(0xFFC9CDD8), k / 26)!,
+                  k < 10 ? 1 : 0,
+                ),
+              ),
             ),
           layer(_FacePainter(check, receipt, glow)),
         ],
@@ -104,13 +103,16 @@ class _FacePainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     // Ticket qui sort de l'imprimante (derrière le boîtier).
     if (receipt > 0) {
-      final h = 150 * Curves.easeOut.transform(receipt);
+      final h = 96 * Curves.easeOut.transform(receipt);
       final r = Rect.fromLTWH(38, 36 - h, 124, h);
       canvas.drawRect(r, Paint()..color = Colors.white);
-      canvas.drawRect(r, Paint()
-        ..color = const Color(0xFFD9DCE5)
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 1);
+      canvas.drawRect(
+        r,
+        Paint()
+          ..color = const Color(0xFFD9DCE5)
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 1,
+      );
       final line = Paint()
         ..color = const Color(0xFFB9BECB)
         ..strokeWidth = 3
@@ -141,20 +143,25 @@ class _FacePainter extends CustomPainter {
         ..shader = BC.goldGradient.createShader(body.outerRect),
     );
     // Fente d'impression.
-    canvas.drawRRect(RRect.fromRectAndRadius(const Rect.fromLTWH(30, 40, 140, 10), const Radius.circular(5)),
-        Paint()..color = const Color(0xFF000000));
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(const Rect.fromLTWH(30, 40, 140, 10), const Radius.circular(5)),
+      Paint()..color = const Color(0xFF000000),
+    );
     // Écran.
     final screen = RRect.fromRectAndRadius(const Rect.fromLTWH(22, 64, 156, 108), const Radius.circular(12));
     canvas.drawRRect(screen, Paint()..color = const Color(0xFFF7F8FC));
     canvas.drawRRect(
-        screen,
-        Paint()
-          ..color = BC.green.withValues(alpha: .18 * glow)
-          ..maskFilter = const MaskFilter.blur(BlurStyle.inner, 18));
+      screen,
+      Paint()
+        ..color = BC.green.withValues(alpha: .18 * glow)
+        ..maskFilter = const MaskFilter.blur(BlurStyle.inner, 18),
+    );
     // Mini logo en haut de l'écran.
     final tp = TextPainter(
       text: const TextSpan(
-          text: 'BankCards Pay', style: TextStyle(fontFamily: 'Manrope', fontSize: 9, fontWeight: FontWeight.w800, color: BC.navy)),
+        text: 'BankCards Pay',
+        style: TextStyle(fontFamily: 'Manrope', fontSize: 9, fontWeight: FontWeight.w800, color: BC.navy),
+      ),
       textDirection: TextDirection.ltr,
     )..layout();
     tp.paint(canvas, const Offset(32, 72));
@@ -167,13 +174,14 @@ class _FacePainter extends CustomPainter {
       final metric = path.computeMetrics().first;
       final sub = metric.extractPath(0, metric.length * Curves.easeOutCubic.transform(check));
       canvas.drawPath(
-          sub,
-          Paint()
-            ..color = BC.green
-            ..style = PaintingStyle.stroke
-            ..strokeWidth = 13
-            ..strokeCap = StrokeCap.round
-            ..strokeJoin = StrokeJoin.round);
+        sub,
+        Paint()
+          ..color = BC.green
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 13
+          ..strokeCap = StrokeCap.round
+          ..strokeJoin = StrokeJoin.round,
+      );
     }
     // Clavier.
     const cols = 3, rows = 4;
@@ -186,16 +194,17 @@ class _FacePainter extends CustomPainter {
         if (r == rows - 1 && c == cols - 1) col = BC.green;
         if (r == rows - 1 && c == 0) col = const Color(0xFFE5484D);
         if (r == rows - 1 && c == 1) col = BC.gold;
-        canvas.drawRRect(RRect.fromRectAndRadius(rect.shift(const Offset(0, 3)), const Radius.circular(7)),
-            Paint()..color = Colors.black.withValues(alpha: .6));
+        canvas.drawRRect(
+          RRect.fromRectAndRadius(rect.shift(const Offset(0, 3)), const Radius.circular(7)),
+          Paint()..color = Colors.black.withValues(alpha: .6),
+        );
         canvas.drawRRect(RRect.fromRectAndRadius(rect, const Radius.circular(7)), Paint()..color = col);
       }
     }
   }
 
   @override
-  bool shouldRepaint(covariant _FacePainter old) =>
-      old.check != check || old.receipt != receipt || old.glow != glow;
+  bool shouldRepaint(covariant _FacePainter old) => old.check != check || old.receipt != receipt || old.glow != glow;
 }
 
 /// Code-barres déterministe.

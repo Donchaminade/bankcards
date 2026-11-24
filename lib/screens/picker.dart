@@ -26,7 +26,11 @@ class _PickerScreenState extends State<PickerScreen> {
     _pc.addListener(() => setState(() => _page = _pc.page ?? 0));
     var t = 1500;
     for (final p in [1, 2, 3, 4, 2]) {
-      Demo.after(this, t, () => _pc.animateToPage(p, duration: const Duration(milliseconds: 750), curve: Curves.easeInOutCubic));
+      Demo.after(
+        this,
+        t,
+        () => _pc.animateToPage(p, duration: const Duration(milliseconds: 750), curve: Curves.easeInOutCubic),
+      );
       t += 1250;
     }
     Demo.after(this, t + 300, _choose);
@@ -68,7 +72,7 @@ class _PickerScreenState extends State<PickerScreen> {
           ),
           const Positioned.fill(child: SparkleField(count: 18, seed: 5, maxSize: 6, intensity: .8)),
           Padding(
-            padding: EdgeInsets.only(top: pad.top + 8, bottom: pad.bottom + 16),
+            padding: EdgeInsets.only(top: pad.top + 8, bottom: safeBottom(context)),
             child: Column(
               children: [
                 Padding(
@@ -76,7 +80,10 @@ class _PickerScreenState extends State<PickerScreen> {
                   child: Row(
                     children: [
                       CircleIconButton(
-                          icon: Icons.chevron_left_rounded, onTap: () => Navigator.pop(context), tooltip: 'Retour'),
+                        icon: Icons.chevron_left_rounded,
+                        onTap: () => Navigator.pop(context),
+                        tooltip: 'Retour',
+                      ),
                       const Spacer(),
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
@@ -85,8 +92,10 @@ class _PickerScreenState extends State<PickerScreen> {
                           borderRadius: BorderRadius.circular(20),
                           border: Border.all(color: BC.line),
                         ),
-                        child: Text('${_index + 1} / ${catalog.length}',
-                            style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 12.5)),
+                        child: Text(
+                          '${_index + 1} / ${catalog.length}',
+                          style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 12.5),
+                        ),
                       ),
                     ],
                   ),
@@ -175,17 +184,30 @@ class _Title extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Text(card.networkLabel.toUpperCase(),
-            style: const TextStyle(color: BC.goldDeep, fontSize: 11, letterSpacing: 2.4, fontWeight: FontWeight.w800)),
+        Text(
+          card.networkLabel.toUpperCase(),
+          style: const TextStyle(color: BC.goldDeep, fontSize: 11, letterSpacing: 2.4, fontWeight: FontWeight.w800),
+        ),
         const SizedBox(height: 2),
         Text(card.name, style: const TextStyle(fontSize: 30, fontWeight: FontWeight.w800, letterSpacing: -.4)),
         const SizedBox(height: 4),
         Text.rich(
-          TextSpan(children: [
-            TextSpan(text: fcfa(card.price), style: const TextStyle(fontWeight: FontWeight.w800, color: BC.ink)),
-            const TextSpan(text: ' / an  ·  ', style: TextStyle(color: BC.muted)),
-            TextSpan(text: card.material, style: const TextStyle(color: BC.muted)),
-          ]),
+          TextSpan(
+            children: [
+              TextSpan(
+                text: fcfa(card.price),
+                style: const TextStyle(fontWeight: FontWeight.w800, color: BC.ink),
+              ),
+              const TextSpan(
+                text: ' / an  ·  ',
+                style: TextStyle(color: BC.muted),
+              ),
+              TextSpan(
+                text: card.material,
+                style: const TextStyle(color: BC.muted),
+              ),
+            ],
+          ),
           style: const TextStyle(fontSize: 13.5),
         ),
       ],
@@ -202,19 +224,21 @@ class _Dots extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         for (var i = 0; i < catalog.length; i++)
-          Builder(builder: (_) {
-            final t = (1 - (i - page).abs()).clamp(0.0, 1.0);
-            return Container(
-              margin: const EdgeInsets.symmetric(horizontal: 3),
-              width: 7 + 18 * t,
-              height: 7,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(4),
-                color: Color.lerp(BC.line, BC.gold, t),
-                boxShadow: t > .5 ? [BoxShadow(color: BC.gold.withValues(alpha: .5 * t), blurRadius: 8)] : null,
-              ),
-            );
-          }),
+          Builder(
+            builder: (_) {
+              final t = (1 - (i - page).abs()).clamp(0.0, 1.0);
+              return Container(
+                margin: const EdgeInsets.symmetric(horizontal: 3),
+                width: 7 + 18 * t,
+                height: 7,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(4),
+                  color: Color.lerp(BC.line, BC.gold, t),
+                  boxShadow: t > .5 ? [BoxShadow(color: BC.gold.withValues(alpha: .5 * t), blurRadius: 8)] : null,
+                ),
+              );
+            },
+          ),
       ],
     );
   }

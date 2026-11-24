@@ -1,3 +1,6 @@
+import 'dart:math' as math;
+
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 
 import '../theme.dart';
@@ -16,11 +19,7 @@ class CircleIconButton extends StatelessWidget {
       child: InkWell(
         customBorder: const CircleBorder(),
         onTap: onTap,
-        child: SizedBox(
-          width: 42,
-          height: 42,
-          child: Icon(icon, size: 20, color: dark ? Colors.white : BC.ink),
-        ),
+        child: SizedBox(width: 42, height: 42, child: Icon(icon, size: 20, color: dark ? Colors.white : BC.ink)),
       ),
     );
     return tooltip == null ? w : Tooltip(message: tooltip!, child: w);
@@ -51,9 +50,10 @@ class PrimaryButton extends StatelessWidget {
                 Icon(icon, size: 18, color: light ? BC.ink : BC.goldLight),
                 const SizedBox(width: 8),
               ],
-              Text(label,
-                  style: TextStyle(
-                      color: light ? BC.ink : Colors.white, fontWeight: FontWeight.w700, fontSize: 15.5)),
+              Text(
+                label,
+                style: TextStyle(color: light ? BC.ink : Colors.white, fontWeight: FontWeight.w700, fontSize: 15.5),
+              ),
             ],
           ),
         ),
@@ -64,13 +64,23 @@ class PrimaryButton extends StatelessWidget {
 
 /// Apparition décalée (fondu + glissement) pilotée par un contrôleur.
 class Reveal extends StatelessWidget {
-  const Reveal({super.key, required this.anim, required this.start, required this.end, required this.child, this.dy = 18});
+  const Reveal({
+    super.key,
+    required this.anim,
+    required this.start,
+    required this.end,
+    required this.child,
+    this.dy = 18,
+  });
   final Animation<double> anim;
   final double start, end, dy;
   final Widget child;
   @override
   Widget build(BuildContext context) {
-    final a = CurvedAnimation(parent: anim, curve: Interval(start, end, curve: Curves.easeOutCubic));
+    final a = CurvedAnimation(
+      parent: anim,
+      curve: Interval(start, end, curve: Curves.easeOutCubic),
+    );
     return AnimatedBuilder(
       animation: a,
       builder: (_, c) => Opacity(
@@ -90,16 +100,28 @@ class InfoRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 13),
-      decoration: BoxDecoration(border: last ? null : const Border(bottom: BorderSide(color: BC.line))),
+      decoration: BoxDecoration(
+        border: last ? null : const Border(bottom: BorderSide(color: BC.line)),
+      ),
       child: Row(
         children: [
-          Text(label,
-              style: TextStyle(
-                  color: bold ? BC.ink : BC.muted, fontWeight: bold ? FontWeight.w700 : FontWeight.w500, fontSize: 14)),
+          Text(
+            label,
+            style: TextStyle(
+              color: bold ? BC.ink : BC.muted,
+              fontWeight: bold ? FontWeight.w700 : FontWeight.w500,
+              fontSize: 14,
+            ),
+          ),
           const Spacer(),
-          Text(value,
-              style: TextStyle(
-                  color: BC.ink, fontWeight: bold ? FontWeight.w800 : FontWeight.w600, fontSize: bold ? 16 : 14)),
+          Text(
+            value,
+            style: TextStyle(
+              color: BC.ink,
+              fontWeight: bold ? FontWeight.w800 : FontWeight.w600,
+              fontSize: bold ? 16 : 14,
+            ),
+          ),
         ],
       ),
     );
@@ -122,4 +144,14 @@ class Panel extends StatelessWidget {
       child: child,
     );
   }
+}
+
+/// Marge basse sûre : zone de sécurité (encoche, barre d'accueil) + marge généreuse.
+/// Sur le web mobile (Safari, viewport-fit=cover), Flutter ne reçoit pas l'encart de la barre
+/// d'accueil : on réserve alors 44 px pour garder les boutons bien au-dessus.
+double safeBottom(BuildContext context) {
+  final mq = MediaQuery.of(context);
+  final inset = math.max(mq.viewPadding.bottom, mq.padding.bottom);
+  if (inset > 0) return inset + 14;
+  return kIsWeb ? 44 : 24;
 }

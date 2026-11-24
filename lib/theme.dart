@@ -16,10 +16,7 @@ class BC {
   static const goldDeep = Color(0xFF9C7A1E);
   static const green = Color(0xFF16A34A);
 
-  static const goldGradient = LinearGradient(
-    colors: [goldDeep, gold, goldLight, gold],
-    stops: [0, .35, .6, 1],
-  );
+  static const goldGradient = LinearGradient(colors: [goldDeep, gold, goldLight, gold], stops: [0, .35, .6, 1]);
 
   static ThemeData theme() {
     final base = ThemeData(

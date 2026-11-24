@@ -17,12 +17,13 @@ class ReceiptScreen extends StatefulWidget {
 }
 
 class _ReceiptScreenState extends State<ReceiptScreen> with TickerProviderStateMixin {
-  late final AnimationController _print =
-      AnimationController(vsync: this, duration: const Duration(milliseconds: 3000));
-  late final AnimationController _stamp =
-      AnimationController(vsync: this, duration: const Duration(milliseconds: 650));
-  late final AnimationController _led =
-      AnimationController(vsync: this, duration: const Duration(milliseconds: 500))..repeat(reverse: true);
+  late final AnimationController _print = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 3000),
+  );
+  late final AnimationController _stamp = AnimationController(vsync: this, duration: const Duration(milliseconds: 650));
+  late final AnimationController _led = AnimationController(vsync: this, duration: const Duration(milliseconds: 500))
+    ..repeat(reverse: true);
   bool _done = false;
 
   @override
@@ -72,27 +73,29 @@ class _ReceiptScreenState extends State<ReceiptScreen> with TickerProviderStateM
           const Positioned.fill(
             child: DecoratedBox(
               decoration: BoxDecoration(
-                gradient: RadialGradient(
-                  center: Alignment(0, -.5),
-                  radius: 1.1,
-                  colors: [Color(0xFF13285A), BC.ink],
-                ),
+                gradient: RadialGradient(center: Alignment(0, -.5), radius: 1.1, colors: [Color(0xFF13285A), BC.ink]),
               ),
             ),
           ),
           const Positioned.fill(child: SparkleField(count: 30, seed: 21, maxSize: 6, intensity: .9)),
           Padding(
-            padding: EdgeInsets.fromLTRB(20, pad.top + 8, 20, pad.bottom + 14),
+            padding: EdgeInsets.fromLTRB(20, pad.top + 8, 20, safeBottom(context)),
             child: Column(
               children: [
                 Row(
                   children: [
                     CircleIconButton(
-                        icon: Icons.chevron_left_rounded, dark: true, onTap: () => Navigator.pop(context), tooltip: 'Retour'),
+                      icon: Icons.chevron_left_rounded,
+                      dark: true,
+                      onTap: () => Navigator.pop(context),
+                      tooltip: 'Retour',
+                    ),
                     const Expanded(
-                      child: Text('Reçu',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700, fontSize: 16)),
+                      child: Text(
+                        'Reçu',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700, fontSize: 16),
+                      ),
                     ),
                     const SizedBox(width: 42),
                   ],
@@ -137,7 +140,9 @@ class _ReceiptScreenState extends State<ReceiptScreen> with TickerProviderStateM
                     transitionBuilder: (c, a) => FadeTransition(
                       opacity: a,
                       child: SlideTransition(
-                          position: Tween(begin: const Offset(0, .4), end: Offset.zero).animate(a), child: c),
+                        position: Tween(begin: const Offset(0, .4), end: Offset.zero).animate(a),
+                        child: c,
+                      ),
                     ),
                     child: _done
                         ? Row(
@@ -147,13 +152,15 @@ class _ReceiptScreenState extends State<ReceiptScreen> with TickerProviderStateM
                                 child: _DarkButton(
                                   label: 'Partager',
                                   icon: Icons.ios_share_rounded,
-                                  onTap: () => ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(content: Text('Reçu prêt à être partagé (démo).')),
-                                  ),
+                                  onTap: () => ScaffoldMessenger.of(
+                                    context,
+                                  ).showSnackBar(const SnackBar(content: Text('Reçu prêt à être partagé (démo).'))),
                                 ),
                               ),
                               const SizedBox(width: 12),
-                              Expanded(child: PrimaryButton(label: 'Terminé', light: true, onTap: _finish)),
+                              Expanded(
+                                child: PrimaryButton(label: 'Terminé', light: true, onTap: _finish),
+                              ),
                             ],
                           )
                         : Center(
@@ -163,8 +170,10 @@ class _ReceiptScreenState extends State<ReceiptScreen> with TickerProviderStateM
                               children: [
                                 Icon(Icons.print_outlined, size: 16, color: Colors.white.withValues(alpha: .6)),
                                 const SizedBox(width: 8),
-                                Text('Impression de votre reçu…',
-                                    style: TextStyle(color: Colors.white.withValues(alpha: .6), fontSize: 13)),
+                                Text(
+                                  'Impression de votre reçu…',
+                                  style: TextStyle(color: Colors.white.withValues(alpha: .6), fontSize: 13),
+                                ),
                               ],
                             ),
                           ),
@@ -199,7 +208,10 @@ class _DarkButton extends StatelessWidget {
             children: [
               Icon(icon, size: 18, color: BC.goldLight),
               const SizedBox(width: 8),
-              Text(label, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700, fontSize: 15)),
+              Text(
+                label,
+                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700, fontSize: 15),
+              ),
             ],
           ),
         ),
@@ -231,8 +243,10 @@ class _Printer extends StatelessWidget {
             top: 9,
             child: ShaderMask(
               shaderCallback: (r) => BC.goldGradient.createShader(r),
-              child: const Text('BANKCARDS',
-                  style: TextStyle(color: Colors.white, fontSize: 8.5, letterSpacing: 2.5, fontWeight: FontWeight.w800)),
+              child: const Text(
+                'BANKCARDS',
+                style: TextStyle(color: Colors.white, fontSize: 8.5, letterSpacing: 2.5, fontWeight: FontWeight.w800),
+              ),
             ),
           ),
           Positioned(
@@ -273,8 +287,12 @@ class _Paper extends StatelessWidget {
     const mono = TextStyle(fontFamily: kMono, fontSize: 10.5, color: Color(0xFF1A1A1A), height: 1.5);
     final small = mono.copyWith(fontSize: 9, color: const Color(0xFF6B6B6B));
     Widget kv(String k, String v, {TextStyle? s}) => Row(
-          children: [Text(k, style: s ?? small), const Spacer(), Text(v, style: s ?? mono)],
-        );
+      children: [
+        Text(k, style: s ?? small),
+        const Spacer(),
+        Text(v, style: s ?? mono),
+      ],
+    );
     final st = Curves.easeOutBack.transform(stamp.clamp(0, 1));
     return ClipPath(
       clipper: _ZigZag(),
@@ -295,9 +313,11 @@ class _Paper extends StatelessWidget {
             Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const Text('BANKCARDS',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 20, letterSpacing: 6, fontWeight: FontWeight.w600, color: BC.ink)),
+                const Text(
+                  'BANKCARDS',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 20, letterSpacing: 6, fontWeight: FontWeight.w600, color: BC.ink),
+                ),
                 const SizedBox(height: 2),
                 Text('REÇU DE COMMANDE CARTE', textAlign: TextAlign.center, style: small.copyWith(letterSpacing: 2)),
                 const SizedBox(height: 12),
@@ -309,7 +329,11 @@ class _Paper extends StatelessWidget {
                 const SizedBox(height: 8),
                 const _Dashed(),
                 const SizedBox(height: 8),
-                kv('${card.networkLabel} ${card.name}'.toUpperCase(), fcfa(card.price), s: mono.copyWith(fontWeight: FontWeight.w700)),
+                kv(
+                  '${card.networkLabel} ${card.name}'.toUpperCase(),
+                  fcfa(card.price),
+                  s: mono.copyWith(fontWeight: FontWeight.w700),
+                ),
                 Text(card.material, style: small),
                 kv('ÉMISSION CARTE', 'OFFERT', s: mono),
                 kv('LIVRAISON · 5–7 J', 'OFFERT', s: mono),
@@ -324,19 +348,23 @@ class _Paper extends StatelessWidget {
                     Text(fcfa(card.price), style: mono.copyWith(fontSize: 17, fontWeight: FontWeight.w700)),
                   ],
                 ),
-                Row(children: [
-                  Text('PAYÉ PAR ${card.networkLabel.toUpperCase()} ·· ${card.last4}', style: small),
-                  const Spacer(),
-                  Text('APPROUVÉ', style: small),
-                ]),
+                Row(
+                  children: [
+                    Text('PAYÉ PAR ${card.networkLabel.toUpperCase()} ·· ${card.last4}', style: small),
+                    const Spacer(),
+                    Text('APPROUVÉ', style: small),
+                  ],
+                ),
                 const SizedBox(height: 14),
                 SizedBox(height: 46, child: CustomPaint(painter: BarcodePainter(_receiptNo))),
                 const SizedBox(height: 4),
                 Text(_receiptNo, textAlign: TextAlign.center, style: small.copyWith(letterSpacing: 2)),
                 const SizedBox(height: 10),
-                const Text('Merci d\'avoir choisi BankCards.',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(fontFamily: kSerif, fontStyle: FontStyle.italic, fontSize: 16, color: BC.ink)),
+                const Text(
+                  'Merci d\'avoir choisi BankCards.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontFamily: kSerif, fontStyle: FontStyle.italic, fontSize: 16, color: BC.ink),
+                ),
               ],
             ),
             // Tampon « PAYÉ » qui s'abat sur le total.
@@ -367,18 +395,35 @@ class _Stamp extends StatelessWidget {
     return Container(
       width: 84,
       height: 84,
-      decoration: BoxDecoration(shape: BoxShape.circle, border: Border.all(color: c, width: 3)),
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        border: Border.all(color: c, width: 3),
+      ),
       child: Container(
         margin: const EdgeInsets.all(4),
-        decoration: BoxDecoration(shape: BoxShape.circle, border: Border.all(color: c, width: 1.2)),
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          border: Border.all(color: c, width: 1.2),
+        ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const Text('★ ★ ★', style: TextStyle(color: c, fontSize: 7, letterSpacing: 1)),
-            Text('PAYÉ',
-                style: TextStyle(
-                    color: c, fontSize: 20, fontWeight: FontWeight.w800, letterSpacing: 1.5, fontFamily: kMono, height: 1.1)),
-            const Text('24.11.26', style: TextStyle(color: c, fontSize: 7.5, fontFamily: kMono, fontWeight: FontWeight.w700)),
+            Text(
+              'PAYÉ',
+              style: TextStyle(
+                color: c,
+                fontSize: 20,
+                fontWeight: FontWeight.w800,
+                letterSpacing: 1.5,
+                fontFamily: kMono,
+                height: 1.1,
+              ),
+            ),
+            const Text(
+              '24.11.26',
+              style: TextStyle(color: c, fontSize: 7.5, fontFamily: kMono, fontWeight: FontWeight.w700),
+            ),
           ],
         ),
       ),
@@ -390,13 +435,23 @@ class _Dashed extends StatelessWidget {
   const _Dashed();
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(builder: (_, c) {
-      final n = (c.maxWidth / 6).floor();
-      return Row(
-        children: List.generate(
-            n, (_) => Expanded(child: Container(height: 1, margin: const EdgeInsets.symmetric(horizontal: 1.2), color: const Color(0xFFB5B2A8)))),
-      );
-    });
+    return LayoutBuilder(
+      builder: (_, c) {
+        final n = (c.maxWidth / 6).floor();
+        return Row(
+          children: List.generate(
+            n,
+            (_) => Expanded(
+              child: Container(
+                height: 1,
+                margin: const EdgeInsets.symmetric(horizontal: 1.2),
+                color: const Color(0xFFB5B2A8),
+              ),
+            ),
+          ),
+        );
+      },
+    );
   }
 }
 
@@ -404,7 +459,9 @@ class _ZigZag extends CustomClipper<Path> {
   @override
   Path getClip(Size s) {
     const t = 7.0;
-    final p = Path()..lineTo(s.width, 0)..lineTo(s.width, s.height - t);
+    final p = Path()
+      ..lineTo(s.width, 0)
+      ..lineTo(s.width, s.height - t);
     var x = s.width;
     var up = false;
     while (x > 0) {

@@ -34,7 +34,11 @@ class BankCardView extends StatelessWidget {
                 blurRadius: 30,
                 offset: const Offset(0, 16),
               ),
-              BoxShadow(color: Colors.black.withValues(alpha: .18 * elevation), blurRadius: 8, offset: const Offset(0, 3)),
+              BoxShadow(
+                color: Colors.black.withValues(alpha: .18 * elevation),
+                blurRadius: 8,
+                offset: const Offset(0, 3),
+              ),
             ],
           ),
           child: ClipRRect(
@@ -44,11 +48,7 @@ class BankCardView extends StatelessWidget {
               children: [
                 DecoratedBox(
                   decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: card.colors,
-                    ),
+                    gradient: LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: card.colors),
                   ),
                 ),
                 CustomPaint(painter: _TexturePainter(card)),
@@ -101,8 +101,10 @@ class _CardFace extends StatelessWidget {
             children: [
               const BrandMark(size: 18),
               const SizedBox(width: 7),
-              Text('BankCards',
-                  style: TextStyle(color: ink, fontWeight: FontWeight.w800, fontSize: 14, letterSpacing: .2)),
+              Text(
+                'BankCards',
+                style: TextStyle(color: ink, fontWeight: FontWeight.w800, fontSize: 14, letterSpacing: .2),
+              ),
               const SizedBox(width: 8),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
@@ -110,19 +112,31 @@ class _CardFace extends StatelessWidget {
                   borderRadius: BorderRadius.circular(20),
                   border: Border.all(color: soft.withValues(alpha: .45), width: .8),
                 ),
-                child: Text(card.tier.toUpperCase(),
-                    style: TextStyle(color: soft, fontSize: 8.5, fontWeight: FontWeight.w700, letterSpacing: 1.6)),
+                child: Text(
+                  card.tier.toUpperCase(),
+                  style: TextStyle(color: soft, fontSize: 8.5, fontWeight: FontWeight.w700, letterSpacing: 1.6),
+                ),
               ),
               const Spacer(),
               CustomPaint(size: const Size(22, 22), painter: ContactlessPainter(ink.withValues(alpha: .85))),
             ],
           ),
           const SizedBox(height: 18),
-          CustomPaint(size: const Size(44, 34), painter: ChipPainter(black: card.finish == Finish.black)),
+          CustomPaint(
+            size: const Size(44, 34),
+            painter: ChipPainter(black: card.finish == Finish.black),
+          ),
           const Spacer(),
-          Text(card.masked,
-              style: TextStyle(
-                  color: ink, fontFamily: kMono, fontSize: 16, letterSpacing: 1.2, fontWeight: FontWeight.w700)),
+          Text(
+            card.masked,
+            style: TextStyle(
+              color: ink,
+              fontFamily: kMono,
+              fontSize: 16,
+              letterSpacing: 1.2,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
           const SizedBox(height: 10),
           Row(
             crossAxisAlignment: CrossAxisAlignment.end,
@@ -132,10 +146,15 @@ class _CardFace extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text('TITULAIRE', style: TextStyle(color: soft, fontSize: 7, letterSpacing: 1.4, fontWeight: FontWeight.w700)),
+                    Text(
+                      'TITULAIRE',
+                      style: TextStyle(color: soft, fontSize: 7, letterSpacing: 1.4, fontWeight: FontWeight.w700),
+                    ),
                     const SizedBox(height: 2),
-                    Text(holderName,
-                        style: TextStyle(color: ink, fontSize: 11.5, letterSpacing: 1.1, fontWeight: FontWeight.w700)),
+                    Text(
+                      holderName,
+                      style: TextStyle(color: ink, fontSize: 11.5, letterSpacing: 1.1, fontWeight: FontWeight.w700),
+                    ),
                   ],
                 ),
               ),
@@ -143,9 +162,15 @@ class _CardFace extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text('EXP', style: TextStyle(color: soft, fontSize: 7, letterSpacing: 1.4, fontWeight: FontWeight.w700)),
+                  Text(
+                    'EXP',
+                    style: TextStyle(color: soft, fontSize: 7, letterSpacing: 1.4, fontWeight: FontWeight.w700),
+                  ),
                   const SizedBox(height: 2),
-                  Text(expiry, style: TextStyle(color: ink, fontFamily: kMono, fontSize: 11.5, fontWeight: FontWeight.w700)),
+                  Text(
+                    expiry,
+                    style: TextStyle(color: ink, fontFamily: kMono, fontSize: 11.5, fontWeight: FontWeight.w700),
+                  ),
                 ],
               ),
               const SizedBox(width: 18),
@@ -199,36 +224,41 @@ class NetworkLogo extends StatelessWidget {
         children: [
           CustomPaint(size: Size(46 * scale, 28 * scale), painter: _MastercardPainter()),
           const SizedBox(height: 2),
-          Text(card.tier, style: TextStyle(color: card.ink.withValues(alpha: .8), fontSize: 8 * scale, fontWeight: FontWeight.w600)),
+          Text(
+            card.tier,
+            style: TextStyle(color: card.ink.withValues(alpha: .8), fontSize: 8 * scale, fontWeight: FontWeight.w600),
+          ),
         ],
       );
     }
     final color = card.finish == Finish.black ? null : card.ink;
     final text = Transform(
       transform: Matrix4.skewX(-.22),
-      child: Text('VISA',
-          style: TextStyle(
-            fontSize: 25 * scale,
-            fontWeight: FontWeight.w800,
-            height: 1,
-            letterSpacing: .5,
-            color: color ?? Colors.white,
-          )),
+      child: Text(
+        'VISA',
+        style: TextStyle(
+          fontSize: 25 * scale,
+          fontWeight: FontWeight.w800,
+          height: 1,
+          letterSpacing: .5,
+          color: color ?? Colors.white,
+        ),
+      ),
     );
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
-        color == null
-            ? ShaderMask(
-                shaderCallback: (r) => BC.goldGradient.createShader(r),
-                child: text,
-              )
-            : text,
+        color == null ? ShaderMask(shaderCallback: (r) => BC.goldGradient.createShader(r), child: text) : text,
         const SizedBox(height: 1),
-        Text(card.tier,
-            style: TextStyle(
-                color: (color ?? BC.goldLight).withValues(alpha: .8), fontSize: 8 * scale, fontWeight: FontWeight.w600)),
+        Text(
+          card.tier,
+          style: TextStyle(
+            color: (color ?? BC.goldLight).withValues(alpha: .8),
+            fontSize: 8 * scale,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
       ],
     );
   }
@@ -279,7 +309,9 @@ class ChipPainter extends CustomPainter {
     canvas.drawLine(Offset(w * .68, h * .33), Offset(w, h * .33), line);
     canvas.drawLine(Offset(w * .68, h * .66), Offset(w, h * .66), line);
     canvas.drawRRect(
-        RRect.fromRectAndRadius(Rect.fromLTRB(w * .32, h * .18, w * .68, h * .82), Radius.circular(h * .12)), line);
+      RRect.fromRectAndRadius(Rect.fromLTRB(w * .32, h * .18, w * .68, h * .82), Radius.circular(h * .12)),
+      line,
+    );
     canvas.drawLine(Offset(w * .5, 0), Offset(w * .5, h * .18), line);
     canvas.drawLine(Offset(w * .5, h * .82), Offset(w * .5, h), line);
     canvas.drawRRect(rr, line..color = const Color(0xFF6E5313).withValues(alpha: .4));
@@ -345,19 +377,31 @@ class _TexturePainter extends CustomPainter {
           ..strokeWidth = 1;
         for (var i = 0; i < 9; i++) {
           final path = Path()..moveTo(-20, s.height * (.25 + i * .09));
-          path.cubicTo(s.width * .3, s.height * (.05 + i * .1), s.width * .6, s.height * (.9 + i * .02),
-              s.width + 20, s.height * (.35 + i * .07));
+          path.cubicTo(
+            s.width * .3,
+            s.height * (.05 + i * .1),
+            s.width * .6,
+            s.height * (.9 + i * .02),
+            s.width + 20,
+            s.height * (.35 + i * .07),
+          );
           canvas.drawPath(path, p..color = card.accent.withValues(alpha: .05 + i * .012));
         }
-        canvas.drawCircle(Offset(s.width * .92, s.height * .05), s.width * .45,
-            Paint()..color = Colors.white.withValues(alpha: .06));
+        canvas.drawCircle(
+          Offset(s.width * .92, s.height * .05),
+          s.width * .45,
+          Paint()..color = Colors.white.withValues(alpha: .06),
+        );
       case Finish.black:
         // Fibre de carbone + filet or.
         for (double x = -s.height; x < s.width; x += 6) {
-          canvas.drawLine(Offset(x, s.height), Offset(x + s.height, 0),
-              Paint()
-                ..color = Colors.white.withValues(alpha: .025)
-                ..strokeWidth = 2);
+          canvas.drawLine(
+            Offset(x, s.height),
+            Offset(x + s.height, 0),
+            Paint()
+              ..color = Colors.white.withValues(alpha: .025)
+              ..strokeWidth = 2,
+          );
         }
         final gold = Paint()
           ..shader = BC.goldGradient.createShader(Offset.zero & s)
@@ -386,8 +430,8 @@ class _ShineSweep extends StatefulWidget {
 }
 
 class _ShineSweepState extends State<_ShineSweep> with SingleTickerProviderStateMixin {
-  late final AnimationController _c =
-      AnimationController(vsync: this, duration: const Duration(milliseconds: 4200))..repeat();
+  late final AnimationController _c = AnimationController(vsync: this, duration: const Duration(milliseconds: 4200))
+    ..repeat();
   @override
   void dispose() {
     _c.dispose();
@@ -415,13 +459,16 @@ class _ShinePainter extends CustomPainter {
     canvas.drawRect(
       rect,
       Paint()
-        ..shader = LinearGradient(colors: [
-          Colors.white.withValues(alpha: 0),
-          const Color(0xFFFFF4CC).withValues(alpha: .38),
-          Colors.white.withValues(alpha: .55),
-          const Color(0xFFFFF4CC).withValues(alpha: .3),
-          Colors.white.withValues(alpha: 0),
-        ], stops: const [0, .35, .5, .65, 1]).createShader(rect)
+        ..shader = LinearGradient(
+          colors: [
+            Colors.white.withValues(alpha: 0),
+            const Color(0xFFFFF4CC).withValues(alpha: .38),
+            Colors.white.withValues(alpha: .55),
+            const Color(0xFFFFF4CC).withValues(alpha: .3),
+            Colors.white.withValues(alpha: 0),
+          ],
+          stops: const [0, .35, .5, .65, 1],
+        ).createShader(rect)
         ..blendMode = BlendMode.plus,
     );
     canvas.restore();
@@ -434,16 +481,17 @@ class _ShinePainter extends CustomPainter {
 /// Pose d'une carte dans un écran (pour les vols Hero qui la font pivoter).
 class CardPose {
   const CardPose({this.quarter = 0, this.rotX = 0, this.rotZ = 0});
+
   /// 0 = paysage, 1 = portrait (rotation de 90°).
   final double quarter;
   final double rotX;
   final double rotZ;
 
   static CardPose lerp(CardPose a, CardPose b, double t) => CardPose(
-        quarter: lerpDouble(a.quarter, b.quarter, t)!,
-        rotX: lerpDouble(a.rotX, b.rotX, t)!,
-        rotZ: lerpDouble(a.rotZ, b.rotZ, t)!,
-      );
+    quarter: lerpDouble(a.quarter, b.quarter, t)!,
+    rotX: lerpDouble(a.rotX, b.rotX, t)!,
+    rotZ: lerpDouble(a.rotZ, b.rotZ, t)!,
+  );
 }
 
 /// Carte posée dans une boîte : en portrait elle est pivotée de 90°.
@@ -455,27 +503,33 @@ class PosedCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(builder: (context, c) {
-      final bw = c.maxWidth, bh = c.maxHeight;
-      final q = pose.quarter;
-      final w = lerpDouble(bw, bh, q)!;
-      final h = lerpDouble(bh, bw, q)!;
-      final m = Matrix4.identity()
-        ..setEntry(3, 2, .0012)
-        ..rotateX(pose.rotX)
-        ..rotateZ(q * math.pi / 2 + pose.rotZ);
-      return OverflowBox(
-        minWidth: w,
-        maxWidth: w,
-        minHeight: h,
-        maxHeight: h,
-        child: Transform(
-          alignment: Alignment.center,
-          transform: m,
-          child: SizedBox(width: w, height: h, child: BankCardView(card: card, elevation: elevation)),
-        ),
-      );
-    });
+    return LayoutBuilder(
+      builder: (context, c) {
+        final bw = c.maxWidth, bh = c.maxHeight;
+        final q = pose.quarter;
+        final w = lerpDouble(bw, bh, q)!;
+        final h = lerpDouble(bh, bw, q)!;
+        final m = Matrix4.identity()
+          ..setEntry(3, 2, .0012)
+          ..rotateX(pose.rotX)
+          ..rotateZ(q * math.pi / 2 + pose.rotZ);
+        return OverflowBox(
+          minWidth: w,
+          maxWidth: w,
+          minHeight: h,
+          maxHeight: h,
+          child: Transform(
+            alignment: Alignment.center,
+            transform: m,
+            child: SizedBox(
+              width: w,
+              height: h,
+              child: BankCardView(card: card, elevation: elevation),
+            ),
+          ),
+        );
+      },
+    );
   }
 }
 
