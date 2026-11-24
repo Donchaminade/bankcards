@@ -4,6 +4,7 @@ import '../data.dart';
 import '../demo.dart';
 import '../theme.dart';
 import '../widgets/sparkles.dart';
+import '../widgets/kit.dart';
 import '../widgets/terminal.dart';
 import '../widgets/ui.dart';
 
@@ -152,9 +153,12 @@ class _ReceiptScreenState extends State<ReceiptScreen> with TickerProviderStateM
                                 child: _DarkButton(
                                   label: 'Partager',
                                   icon: Icons.ios_share_rounded,
-                                  onTap: () => ScaffoldMessenger.of(
+                                  onTap: () => shareOrCopy(
                                     context,
-                                  ).showSnackBar(const SnackBar(content: Text('Reçu prêt à être partagé (démo).'))),
+                                    title: 'Reçu BankCards $_receiptNo',
+                                    text:
+                                        'Reçu BankCards $_receiptNo\nCarte ${widget.card.networkLabel} ${widget.card.name} ·· ${widget.card.last4}\nMontant : ${fcfa(widget.card.price)}\nStatut : PAYÉ\nhttps://bankcards-flutter.vercel.app',
+                                  ),
                                 ),
                               ),
                               const SizedBox(width: 12),

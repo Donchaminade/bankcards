@@ -93,12 +93,13 @@ class Reveal extends StatelessWidget {
 }
 
 class InfoRow extends StatelessWidget {
-  const InfoRow(this.label, this.value, {super.key, this.bold = false, this.last = false});
+  const InfoRow(this.label, this.value, {super.key, this.bold = false, this.last = false, this.onTap});
   final String label, value;
   final bool bold, last;
+  final VoidCallback? onTap;
   @override
   Widget build(BuildContext context) {
-    return Container(
+    final row = Container(
       padding: const EdgeInsets.symmetric(vertical: 13),
       decoration: BoxDecoration(
         border: last ? null : const Border(bottom: BorderSide(color: BC.line)),
@@ -113,17 +114,33 @@ class InfoRow extends StatelessWidget {
               fontSize: 14,
             ),
           ),
-          const Spacer(),
-          Text(
-            value,
-            style: TextStyle(
-              color: BC.ink,
-              fontWeight: bold ? FontWeight.w800 : FontWeight.w600,
-              fontSize: bold ? 16 : 14,
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              value,
+              textAlign: TextAlign.right,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                color: BC.ink,
+                fontWeight: bold ? FontWeight.w800 : FontWeight.w600,
+                fontSize: bold ? 16 : 14,
+              ),
             ),
           ),
+          if (onTap != null) ...[
+            const SizedBox(width: 6),
+            const Icon(Icons.edit_outlined, size: 16, color: BC.goldDeep),
+          ],
         ],
       ),
+    );
+    if (onTap == null) return row;
+    return Semantics(
+      button: true,
+      label: 'Modifier $label : $value',
+      excludeSemantics: true,
+      child: InkWell(onTap: onTap, child: row),
     );
   }
 }

@@ -24,7 +24,7 @@ class Demo {
 final statusDark = ValueNotifier<bool>(true);
 
 class ToneObserver extends NavigatorObserver {
-  static const dark = {'/', 'home', 'receipt'};
+  static const dark = {'/', 'home', 'receipt', 'profile', 'scanner'};
   void _set(Route<dynamic>? r) {
     if (r == null) return;
     statusDark.value = dark.contains(r.settings.name ?? '/');

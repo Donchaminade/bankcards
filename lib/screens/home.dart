@@ -5,8 +5,14 @@ import '../demo.dart';
 import '../theme.dart';
 import '../widgets/bank_card.dart';
 import '../widgets/sparkles.dart';
+import '../state.dart';
 import '../widgets/ui.dart';
+import 'notifications.dart';
 import 'picker.dart';
+import 'profile.dart';
+import 'scanner.dart';
+import 'sheets.dart';
+import 'transactions.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -16,6 +22,13 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final current = catalog.first;
+  final _scroll = ScrollController();
+
+  @override
+  void dispose() {
+    _scroll.dispose();
+    super.dispose();
+  }
 
   @override
   void initState() {
@@ -36,6 +49,7 @@ class _HomeScreenState extends State<HomeScreen> {
       body: Stack(
         children: [
           CustomScrollView(
+            controller: _scroll,
             slivers: [
               SliverToBoxAdapter(
                 child: _Header(card: current, top: pad.top, onCard: _openPicker),
@@ -48,21 +62,25 @@ class _HomeScreenState extends State<HomeScreen> {
                     children: [
                       const Text('Transactions récentes', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 17)),
                       const Spacer(),
-                      Text(
-                        'Tout voir',
-                        style: TextStyle(
-                          color: BC.blue.withValues(alpha: .9),
-                          fontWeight: FontWeight.w700,
-                          fontSize: 13,
+                      TextButton(
+                        onPressed: () =>
+                            Navigator.of(context).push(fadeRoute(const TransactionsScreen(), 'transactions')),
+                        style: TextButton.styleFrom(
+                          foregroundColor: BC.blue,
+                          padding: const EdgeInsets.symmetric(horizontal: 8),
                         ),
+                        child: const Text('Tout voir', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13)),
                       ),
                     ],
                   ),
                 ),
               ),
-              SliverList.builder(
-                itemCount: transactions.length,
-                itemBuilder: (_, i) => _TxTile(tx: transactions[i]),
+              ValueListenableBuilder(
+                valueListenable: AppState.txs,
+                builder: (_, txs, _) => SliverList.builder(
+                  itemCount: txs.length.clamp(0, 6),
+                  itemBuilder: (_, i) => TxTile(tx: txs[i]),
+                ),
               ),
               SliverToBoxAdapter(child: SizedBox(height: 96 + safeBottom(context))),
             ],
@@ -71,7 +89,15 @@ class _HomeScreenState extends State<HomeScreen> {
             left: 0,
             right: 0,
             bottom: safeBottom(context),
-            child: Center(child: _NavPill(onCards: _openPicker)),
+            child: Center(
+              child: _NavPill(
+                onHome: () =>
+                    _scroll.animateTo(0, duration: const Duration(milliseconds: 500), curve: Curves.easeOutCubic),
+                onTransfers: () => showSendSheet(context),
+                onCards: _openPicker,
+                onProfile: () => Navigator.of(context).push(fadeRoute(const ProfileScreen(), 'profile')),
+              ),
+            ),
           ),
         ],
       ),
@@ -106,15 +132,23 @@ class _Header extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    Container(
-                      padding: const EdgeInsets.all(2),
-                      decoration: const BoxDecoration(shape: BoxShape.circle, gradient: BC.goldGradient),
-                      child: const CircleAvatar(
-                        radius: 19,
-                        backgroundColor: BC.navy,
-                        child: Text(
-                          'CA',
-                          style: TextStyle(color: BC.goldLight, fontWeight: FontWeight.w800, fontSize: 13),
+                    Semantics(
+                      button: true,
+                      label: 'Mon profil',
+                      excludeSemantics: true,
+                      child: GestureDetector(
+                        onTap: () => Navigator.of(context).push(fadeRoute(const ProfileScreen(), 'profile')),
+                        child: Container(
+                          padding: const EdgeInsets.all(2),
+                          decoration: const BoxDecoration(shape: BoxShape.circle, gradient: BC.goldGradient),
+                          child: const CircleAvatar(
+                            radius: 19,
+                            backgroundColor: BC.navy,
+                            child: Text(
+                              'CA',
+                              style: TextStyle(color: BC.goldLight, fontWeight: FontWeight.w800, fontSize: 13),
+                            ),
+                          ),
                         ),
                       ),
                     ),
@@ -131,8 +165,50 @@ class _Header extends StatelessWidget {
                         ],
                       ),
                     ),
-                    const CircleIconButton(icon: Icons.search_rounded, dark: true, tooltip: 'Rechercher'),
-                    const SizedBox(width: 10),
+                    CircleIconButton(
+                      icon: Icons.search_rounded,
+                      dark: true,
+                      tooltip: 'Rechercher',
+                      onTap: () => showSearchSheet(context),
+                    ),
+                    const SizedBox(width: 8),
+                    ValueListenableBuilder(
+                      valueListenable: AppState.notifs,
+                      builder: (_, _, _) => Stack(
+                        clipBehavior: Clip.none,
+                        children: [
+                          CircleIconButton(
+                            icon: Icons.notifications_none_rounded,
+                            dark: true,
+                            tooltip: 'Notifications',
+                            onTap: () =>
+                                Navigator.of(context).push(fadeRoute(const NotificationsScreen(), 'notifications')),
+                          ),
+                          if (AppState.unread > 0)
+                            Positioned(
+                              right: -2,
+                              top: -2,
+                              child: IgnorePointer(
+                                child: Container(
+                                  width: 18,
+                                  height: 18,
+                                  alignment: Alignment.center,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    gradient: BC.goldGradient,
+                                    border: Border.all(color: BC.navy, width: 2),
+                                  ),
+                                  child: Text(
+                                    '${AppState.unread}',
+                                    style: const TextStyle(color: BC.ink, fontSize: 9.5, fontWeight: FontWeight.w800),
+                                  ),
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 8),
                     CircleIconButton(icon: Icons.add_rounded, dark: true, onTap: onCard, tooltip: 'Nouvelle carte'),
                   ],
                 ),
@@ -143,13 +219,21 @@ class _Header extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.baseline,
                   textBaseline: TextBaseline.alphabetic,
                   children: [
-                    const Text(
-                      '2 450 000',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 36,
-                        fontWeight: FontWeight.w800,
-                        letterSpacing: -.5,
+                    ValueListenableBuilder(
+                      valueListenable: AppState.balance,
+                      builder: (_, b, _) => TweenAnimationBuilder<double>(
+                        tween: Tween(end: b.toDouble()),
+                        duration: const Duration(milliseconds: 700),
+                        curve: Curves.easeOutCubic,
+                        builder: (_, v, _) => Text(
+                          fcfa(v.round()).replaceAll(' FCFA', ''),
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 36,
+                            fontWeight: FontWeight.w800,
+                            letterSpacing: -.5,
+                          ),
+                        ),
                       ),
                     ),
                     const SizedBox(width: 8),
@@ -175,11 +259,55 @@ class _Header extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: 20),
-                GestureDetector(
-                  onTap: onCard,
-                  child: AspectRatio(
-                    aspectRatio: kCardRatio,
-                    child: CardHero(card: card),
+                Semantics(
+                  button: true,
+                  label: 'Ma carte Visa Classic, choisir une nouvelle carte',
+                  excludeSemantics: true,
+                  child: GestureDetector(
+                    onTap: onCard,
+                    child: AspectRatio(
+                      aspectRatio: kCardRatio,
+                      child: Stack(
+                        fit: StackFit.expand,
+                        children: [
+                          CardHero(card: card),
+                          ValueListenableBuilder(
+                            valueListenable: AppState.frozen,
+                            builder: (_, f, _) => IgnorePointer(
+                              child: AnimatedOpacity(
+                                duration: const Duration(milliseconds: 300),
+                                opacity: f ? 1 : 0,
+                                child: Center(
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                                    decoration: BoxDecoration(
+                                      color: BC.ink.withValues(alpha: .85),
+                                      borderRadius: BorderRadius.circular(30),
+                                      border: Border.all(color: BC.gold.withValues(alpha: .6)),
+                                    ),
+                                    child: const Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Icon(Icons.ac_unit_rounded, color: BC.goldLight, size: 16),
+                                        SizedBox(width: 6),
+                                        Text(
+                                          'Carte gelée',
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.w800,
+                                            fontSize: 13,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
                 ),
               ],
@@ -195,36 +323,52 @@ class _QuickActions extends StatelessWidget {
   const _QuickActions();
   @override
   Widget build(BuildContext context) {
-    const items = [
-      (Icons.north_east_rounded, 'Envoyer'),
-      (Icons.south_west_rounded, 'Recevoir'),
-      (Icons.add_card_rounded, 'Recharger'),
-      (Icons.qr_code_scanner_rounded, 'Scanner'),
+    final items = [
+      (Icons.north_east_rounded, 'Envoyer', () => showSendSheet(context)),
+      (Icons.south_west_rounded, 'Recevoir', () => showReceiveSheet(context)),
+      (Icons.add_card_rounded, 'Recharger', () => showTopUpSheet(context)),
+      (
+        Icons.qr_code_scanner_rounded,
+        'Scanner',
+        () => Navigator.of(context).push(fadeRoute(const ScannerScreen(), 'scanner')),
+      ),
     ];
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 18, 20, 14),
       child: Row(
         children: [
-          for (final (icon, label) in items)
+          for (final (icon, label, onTap) in items)
             Expanded(
-              child: Column(
-                children: [
-                  Container(
-                    width: 52,
-                    height: 52,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(18),
-                      border: Border.all(color: BC.line),
+              child: Semantics(
+                button: true,
+                label: label,
+                excludeSemantics: true,
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(18),
+                  onTap: onTap,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 2),
+                    child: Column(
+                      children: [
+                        Container(
+                          width: 52,
+                          height: 52,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(18),
+                            border: Border.all(color: BC.line),
+                          ),
+                          child: Icon(icon, color: BC.navy, size: 22),
+                        ),
+                        const SizedBox(height: 6),
+                        Text(
+                          label,
+                          style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: BC.ink),
+                        ),
+                      ],
                     ),
-                    child: Icon(icon, color: BC.navy, size: 22),
                   ),
-                  const SizedBox(height: 6),
-                  Text(
-                    label,
-                    style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: BC.ink),
-                  ),
-                ],
+                ),
               ),
             ),
         ],
@@ -233,63 +377,28 @@ class _QuickActions extends StatelessWidget {
   }
 }
 
-class _TxTile extends StatelessWidget {
-  const _TxTile({required this.tx});
-  final Tx tx;
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 7),
-      child: Row(
-        children: [
-          Container(
-            width: 44,
-            height: 44,
-            decoration: BoxDecoration(
-              color: tx.credit ? BC.gold.withValues(alpha: .14) : BC.blue.withValues(alpha: .08),
-              borderRadius: BorderRadius.circular(14),
-            ),
-            child: Icon(tx.icon, size: 20, color: tx.credit ? BC.goldDeep : BC.navy),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(tx.title, style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 14.5)),
-                const SizedBox(height: 2),
-                Text(tx.time, style: const TextStyle(color: BC.muted, fontSize: 12)),
-              ],
-            ),
-          ),
-          Text(
-            '${tx.credit ? '+' : '−'}${fcfa(tx.amount)}',
-            style: TextStyle(
-              fontWeight: FontWeight.w700,
-              fontSize: 14,
-              color: tx.credit ? const Color(0xFF15803D) : BC.ink,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
 class _NavPill extends StatelessWidget {
-  const _NavPill({required this.onCards});
-  final VoidCallback onCards;
+  const _NavPill({required this.onHome, required this.onTransfers, required this.onCards, required this.onProfile});
+  final VoidCallback onHome, onTransfers, onCards, onProfile;
   @override
   Widget build(BuildContext context) {
     Widget item(IconData i, {bool active = false, VoidCallback? onTap, required String label}) => Tooltip(
       message: label,
-      child: GestureDetector(
-        onTap: onTap,
-        child: Container(
-          width: 52,
-          height: 52,
-          decoration: active ? const BoxDecoration(shape: BoxShape.circle, gradient: BC.goldGradient) : null,
-          child: Icon(i, color: active ? BC.ink : Colors.white.withValues(alpha: .7), size: 22),
+      excludeFromSemantics: true,
+      child: Semantics(
+        button: true,
+        label: label,
+        selected: active,
+        excludeSemantics: true,
+        child: GestureDetector(
+          onTap: onTap,
+          behavior: HitTestBehavior.opaque,
+          child: Container(
+            width: 52,
+            height: 52,
+            decoration: active ? const BoxDecoration(shape: BoxShape.circle, gradient: BC.goldGradient) : null,
+            child: Icon(i, color: active ? BC.ink : Colors.white.withValues(alpha: .7), size: 22),
+          ),
         ),
       ),
     );
@@ -304,13 +413,13 @@ class _NavPill extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          item(Icons.home_rounded, active: true, label: 'Accueil'),
+          item(Icons.home_rounded, active: true, onTap: onHome, label: 'Accueil'),
           const SizedBox(width: 10),
-          item(Icons.swap_horiz_rounded, label: 'Transferts'),
+          item(Icons.swap_horiz_rounded, onTap: onTransfers, label: 'Transferts'),
           const SizedBox(width: 10),
           item(Icons.credit_card_rounded, onTap: onCards, label: 'Cartes'),
           const SizedBox(width: 10),
-          item(Icons.person_outline_rounded, label: 'Profil'),
+          item(Icons.person_outline_rounded, onTap: onProfile, label: 'Profil'),
         ],
       ),
     );

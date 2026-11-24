@@ -5,10 +5,12 @@ import 'package:flutter/material.dart';
 
 import '../data.dart';
 import '../demo.dart';
+import '../state.dart';
 import '../theme.dart';
 import '../widgets/bank_card.dart';
 import '../widgets/ui.dart';
 import 'placed.dart';
+import 'sheets.dart';
 
 class ConfirmScreen extends StatefulWidget {
   const ConfirmScreen({super.key, required this.card});
@@ -131,7 +133,10 @@ class _ConfirmScreenState extends State<ConfirmScreen> with TickerProviderStateM
                           InfoRow('Carte', '${card.networkLabel} ${card.name} · ${card.material}'),
                           InfoRow('Cotisation annuelle', fcfa(card.price)),
                           const InfoRow('Livraison', 'Offerte · 5–7 jours'),
-                          const InfoRow('Adresse', 'Adidogomé · Lomé, Togo'),
+                          ValueListenableBuilder(
+                            valueListenable: AppState.address,
+                            builder: (_, a, _) => InfoRow('Adresse', a.short, onTap: () => showAddressSheet(context)),
+                          ),
                           InfoRow('Total aujourd\'hui', fcfa(card.price), bold: true, last: true),
                         ],
                       ),
@@ -144,36 +149,45 @@ class _ConfirmScreenState extends State<ConfirmScreen> with TickerProviderStateM
                     end: 1,
                     child: Row(
                       children: [
-                        for (final (i, p) in [
-                          Icons.workspace_premium_outlined,
-                          Icons.contactless_outlined,
-                        ].indexed) ...[
+                        for (final (i, perk) in card.perks.indexed) ...[
                           if (i > 0) const SizedBox(width: 10),
                           Expanded(
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-                              decoration: BoxDecoration(
+                            child: Semantics(
+                              button: true,
+                              label: perk,
+                              excludeSemantics: true,
+                              child: Material(
                                 color: BC.navy,
-                                borderRadius: BorderRadius.circular(16),
-                                border: Border.all(color: BC.gold.withValues(alpha: .45)),
-                              ),
-                              child: Row(
-                                children: [
-                                  Icon(p, color: BC.goldLight, size: 18),
-                                  const SizedBox(width: 8),
-                                  Expanded(
-                                    child: Text(
-                                      card.perks[i],
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: const TextStyle(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.w700,
-                                        fontSize: 12.5,
-                                      ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(16),
+                                  side: BorderSide(color: BC.gold.withValues(alpha: .45)),
+                                ),
+                                child: InkWell(
+                                  borderRadius: BorderRadius.circular(16),
+                                  onTap: () => showPerkSheet(context, perk),
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                                    child: Row(
+                                      children: [
+                                        Icon(perkIcon(perk), color: BC.goldLight, size: 18),
+                                        const SizedBox(width: 8),
+                                        Expanded(
+                                          child: Text(
+                                            perk,
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: const TextStyle(
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.w700,
+                                              fontSize: 12.5,
+                                            ),
+                                          ),
+                                        ),
+                                        const Icon(Icons.chevron_right_rounded, color: BC.goldLight, size: 16),
+                                      ],
                                     ),
                                   ),
-                                ],
+                                ),
                               ),
                             ),
                           ),

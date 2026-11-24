@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 
@@ -9,11 +10,14 @@ import 'screens/picker.dart';
 import 'screens/placed.dart';
 import 'screens/receipt.dart';
 import 'screens/home.dart';
+import 'state.dart';
 import 'theme.dart';
 import 'widgets/bank_card.dart';
 import 'widgets/sparkles.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await AppState.load();
   final q = Uri.base.queryParameters;
   Demo.enabled = q['demo'] == '1';
   final slow = double.tryParse(q['slow'] ?? '') ?? 1;
@@ -22,6 +26,8 @@ void main() {
     timeDilation = slow;
   }
   runApp(BankCardsApp(chrome: q['frame'] != '0', screen: q['screen'], cardId: q['card']));
+  // Arbre d'accessibilité (lecteurs d'écran, tests automatisés) : ?sem=1
+  if (q['sem'] == '1') SemanticsBinding.instance.ensureSemantics();
 }
 
 class BankCardsApp extends StatelessWidget {

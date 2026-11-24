@@ -41,6 +41,26 @@ Une app Flutter animée aux couleurs bleu · blanc · noir, avec des touches dor
 6. **Commande validée** : le titre, les détails et les boutons apparaissent l'un après l'autre.
 7. **Reçu** : une imprimante en métal **imprime le ticket ligne par ligne**, puis un **tampon « PAYÉ » s'abat** et les actions glissent en place.
 
+## 🧩 Toutes les actions sont fonctionnelles
+
+Aucun bouton mort : chaque action ouvre un vrai écran ou une feuille dans la charte, avec un retour visuel.
+
+| Où | Bouton | Ce qui se passe |
+|---|---|---|
+| Accueil | **Envoyer** / **Transferts** | choix du contact, montant, motif, puis le solde et l'historique se mettent à jour |
+| Accueil | **Recevoir** | QR code, IBAN et numéro Mobile Money, avec copie et partage |
+| Accueil | **Recharger** | Flooz, T-Money ou virement, le solde augmente |
+| Accueil | **Scanner** | viseur animé, lampe, QR marchand détecté puis paiement |
+| Accueil | **Rechercher**, **Notifications**, **Tout voir** | recherche dans les opérations, notifications lues ou non lues, historique filtrable et export |
+| Accueil | une **transaction** | détail, référence, partage et signalement |
+| Accueil | **avatar** / **Profil** | profil, statut et réglages |
+| Profil | **Paramètres de la carte** | geler la carte, plafonds réglables, sans contact, paiements en ligne et à l'étranger, **code PIN masqué** (affiché 5 s), opposition |
+| Profil | **Adresse de livraison** | formulaire modifiable, **gardé en mémoire** sur l'appareil |
+| Profil | **Cashback**, **Conciergerie 24/7** | historique du cashback et transfert sur le solde ; demande de conciergerie (simulée) avec confirmation |
+| Profil | **Sécurité**, **Langue**, **Centre d'aide**, **Inviter**, **Déconnexion** | interrupteurs, choix de langue, FAQ, partage du code parrain, confirmation |
+| Confirmation | **puces d'avantages**, **ligne Adresse** | détail de chaque avantage ; modification de l'adresse |
+| Reçu | **Partager** | vrai partage (Web Share API sur le web, feuille native sur mobile), sinon copie dans le presse-papiers |
+
 ## 💳 Les cartes
 
 | Carte | Réseau | Finition | Couleurs |
@@ -57,12 +77,12 @@ Chaque carte a une puce dorée, le logo sans contact, le logo du réseau, un num
 
 ## 🛠️ Stack
 
-- **Flutter 3.38 / Dart 3.10**, sans aucune dépendance externe
+- **Flutter 3.38 / Dart 3.10**, avec seulement `share_plus` (partage natif) et `shared_preferences` (réglages gardés en mémoire)
 - `Hero` avec un `flightShuttleBuilder` sur mesure qui interpole la boîte, la rotation et l'inclinaison 3D
 - `Matrix4` avec perspective (`rotateX`, `rotateY`, `rotateZ`) pour le carrousel, le terminal isométrique et l'inclinaison au doigt
 - `CustomPainter` pour la puce, le sans contact, Mastercard, le métal brossé, la fibre carbone, le reflet, les paillettes, le terminal, le code-barres et le ticket dentelé
 - `AnimationController` avec des `Interval` pour enchaîner les étapes, `AnimatedContainer` et `AnimatedSwitcher`
-- Tests de widgets (`flutter test`) : catalogue, numéros masqués et parcours complet jusqu'au reçu
+- Tests de widgets (`flutter test`) : catalogue, numéros masqués, parcours complet jusqu'au reçu et chaque bouton de l'app
 
 ```
 lib/
@@ -70,7 +90,9 @@ lib/
 ├── theme.dart           # charte bleu / blanc / noir / or
 ├── data.dart            # catalogue des cartes et transactions (fictives)
 ├── demo.dart            # mode démo auto (?demo=1) et transitions
-├── screens/             # accueil, choix, confirmation, commande validée, reçu
+├── state.dart           # solde, opérations, adresse, réglages de la carte
+├── screens/             # accueil, choix, confirmation, validée, reçu, profil, carte, notifications, scanner, feuilles
+├── share/               # partage web (Web Share API) et natif
 └── widgets/             # carte, paillettes, terminal, composants UI
 ```
 

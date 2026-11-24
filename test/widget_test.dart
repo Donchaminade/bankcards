@@ -27,7 +27,13 @@ void main() {
       await l.load();
     }
 
-    await load('Manrope', ['Manrope-400.ttf', 'Manrope-500.ttf', 'Manrope-600.ttf', 'Manrope-700.ttf', 'Manrope-800.ttf']);
+    await load('Manrope', [
+      'Manrope-400.ttf',
+      'Manrope-500.ttf',
+      'Manrope-600.ttf',
+      'Manrope-700.ttf',
+      'Manrope-800.ttf',
+    ]);
     await load('JetBrainsMono', ['JetBrainsMono-400.ttf', 'JetBrainsMono-700.ttf']);
     await load('Playfair', ['Playfair-Italic.ttf', 'Playfair-700.ttf']);
   });
@@ -76,7 +82,12 @@ void main() {
     t.view.physicalSize = const Size(390, 844);
     t.view.devicePixelRatio = 1;
     addTearDown(t.view.reset);
-    await t.pumpWidget(MaterialApp(theme: BC.theme(), home: ConfirmScreen(card: catalog[2])));
+    await t.pumpWidget(
+      MaterialApp(
+        theme: BC.theme(),
+        home: ConfirmScreen(card: catalog[2]),
+      ),
+    );
     await settle(t, 1000);
     await t.tap(find.text('Commander · 60 000 FCFA'));
     await settle(t, 300);
@@ -95,7 +106,12 @@ void main() {
       t.view.physicalSize = Size(390, h);
       t.view.devicePixelRatio = 1;
       addTearDown(t.view.reset);
-      await t.pumpWidget(MaterialApp(theme: BC.theme(), home: ConfirmScreen(card: catalog[3])));
+      await t.pumpWidget(
+        MaterialApp(
+          theme: BC.theme(),
+          home: ConfirmScreen(card: catalog[3]),
+        ),
+      );
       await settle(t, 1200);
       final cta = t.getRect(find.text('Commander · 120 000 FCFA'));
       expect(cta.bottom, lessThan(h - 24), reason: 'le bouton doit rester au-dessus du bas de l\'écran');
